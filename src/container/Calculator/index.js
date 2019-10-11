@@ -30,41 +30,39 @@ export default class Calculator extends Component {
     this.state = {
       value: "0",
       calculationValue: "0",
-      operator: null
+      operator: null,
+      calculatedFinalResult: false
     }
   }
 
   onChangeValue = (inputValue) => {
-    const { operator, value, calculationValue } = this.state
-    console.log(operator, value, calculationValue, inputValue);
+    const { operator, value, calculationValue, calculatedFinalResult } = this.state
 
-
-    // if (Number(value) === Number(calculationValue)) {
-    //   this.setState({ value: inputValue[inputValue.length -1] })
-    // } else {
-    //   this.setState({ value: inputValue || "0" })
-    // }
-    // if (operator) {
-    //   this.setState({ value: inputValue, calculationValue: value })
-    // }
+    if (calculatedFinalResult) {
+      this.setState({ value: inputValue[inputValue.length -1], calculatedFinalResult: false })
+    } else {
+      if (operator && !Number(calculationValue)) {
+        this.setState({ value: inputValue[inputValue.length -1], calculationValue: value })
+      } else {
+        this.setState({ value: Number(`${value}${inputValue[inputValue.length -1]}`).toString()})
+      }
+    }
   }
 
   onClearPress = () => this.setState({ value: "0", calculationValue: "0", operator: null })
 
   onButtonPress = (number) => {
-    const { value, operator } = this.state
+    const { value, calculationValue, operator, calculatedFinalResult } = this.state
 
-    if (operator) {
-      this.setState({ value: number.toString(), calculationValue: value })
+    if (calculatedFinalResult) {
+      this.setState({ value: number.toString(), calculatedFinalResult: false })
     } else {
-      this.setState({ value: Number(`${value}${number}`).toString()})
+      if (operator && !Number(calculationValue)) {
+        this.setState({ value: number.toString(), calculationValue: value })
+      } else {
+        this.setState({ value: Number(`${value}${number}`).toString()})
+      }
     }
-
-    // if (!Number(value) || Number(value) === Number(calculationValue)) {
-    //   this.setState({ value: number.toString() })
-    // } else {
-    //   this.setState({ value: `${value}${number}`})
-    // }
   }
 
   calculateAddition = (a, b) => (Number(a) + Number(b)).toString()
@@ -73,7 +71,7 @@ export default class Calculator extends Component {
 
   calculateMultiplication = (a, b) => (Number(a) * Number(b)).toString()
 
-  calculateDivision = (a, b) => (Number(b) / Number(a)).toString()
+  calculateDivision = (a, b) => (Number(b) / Number(a)).toFixed(8)
 
   handleOperation = (newOperator) => {
     const { operator, value, calculationValue } = this.state
@@ -81,6 +79,7 @@ export default class Calculator extends Component {
     if (newOperator === OPERATOR.EQUAL) {
       this.setState({
         operator: null,
+        calculatedFinalResult: true,
         value: (operator && !!Number(calculationValue) && !!Number(value))
           ? this[`calculate${operator}`](value, calculationValue)
           : value,
@@ -236,7 +235,6 @@ export default class Calculator extends Component {
   }
 
   render() {
-    console.log(this.state.value, this.state.calculationValue, this.state.operator);
     return (
       <Fragment>
         <StatusBar barStyle="dark-content" />
