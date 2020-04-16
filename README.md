@@ -1,4 +1,2 @@
-# react-native-calculator-app
-Simple calculator application
-
-Method support: Addition, Substraction, Multiplication, Division
+# Simple calculator application
+![Calculator](https://imgur.com/QbDGvNkl.png)
